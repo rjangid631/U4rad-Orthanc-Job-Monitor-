@@ -1,0 +1,16 @@
+#Ignored compiled Files
+*.exe
+*.dll
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+#Ignore virtual environment
+myvenv/
+env/
+
+#Ignore build files
+build/
+dist/
+*.spec
