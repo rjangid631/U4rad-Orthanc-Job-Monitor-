@@ -1,9 +1,6 @@
 import requests
 import time
-
-
-
-
+from plyer import notification  
 
 ORTHANC_URL = "http://localhost:8042"
 CLOUD_URL = "https://pacs.reportingbot.in"
@@ -33,7 +30,7 @@ def fetch_failed_jobs():
 
         return failed_jobs
 
-    except requests.RequestException as e:
+    except requests.RequestException:
         return []
 
 def retry_failed_jobs():
@@ -65,8 +62,16 @@ def retry_failed_jobs():
                     # Delete old failed job after successful retry
                     requests.delete(f"{ORTHANC_URL}/jobs/{job_id}", auth=ORTHANC_AUTH)
 
-        except requests.RequestException as e:
+        except requests.RequestException:
             pass
+
+    # *Trigger notification only if there are successfully retried jobs*
+    if retried_jobs:
+        notification.notify(
+            title="DICOM Retry Status",
+            message=f"Successfully retried {len(retried_jobs)} jobs",
+            timeout=5
+        )
 
 def main():
     """Main loop to check and retry failed jobs every 5 minutes."""
@@ -74,5 +79,5 @@ def main():
         retry_failed_jobs()
         time.sleep(300)  # Wait 5 minutes before next check
 
-if __name__ == "__main__":
+if __name__== "__main__":
     main()
